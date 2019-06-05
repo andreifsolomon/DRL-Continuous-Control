@@ -69,12 +69,12 @@ Follow the instructions below to explore the environment on your own machine! Yo
 - Of course you have to clone this project and have it accessible in your Python environment
 - Then you have to install the Unity environment as described in the [Getting Started section](https://github.com/udacity/deep-reinforcement-learning/blob/master/p2_continuous-control/README.md) (The Unity ML-agant environment is already configured by Udacity)
 
-####Step 1: Activate the Environment
+#### Step 1: Activate the Environment
 If you haven't already, please follow the instructions in the DRLND GitHub repository to set up your Python environment. These instructions can be found in README.md at the root of the repository. By following these instructions, you will install PyTorch, the ML-Agents toolkit, and a few more Python packages required to complete the project.
 
 (For Windows users) The ML-Agents toolkit supports Windows 10. While it might be possible to run the ML-Agents toolkit using other versions of Windows, it has not been tested on other versions. Furthermore, the ML-Agents toolkit has not been tested on a Windows VM such as Bootcamp or Parallels.
 
-####Step 2: Download the Unity Environment
+#### Step 2: Download the Unity Environment
 For this project, you will not need to install Unity - this is because we have already built the environment for you, and you can download it from one of the links below. You need only select the environment that matches your operating system:
 
 **Version 1: One (1) Agent**
