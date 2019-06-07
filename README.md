@@ -60,7 +60,8 @@ The task is episodic, and **in order to solve the environment, the agent must ge
 
 ## Getting started
 
-###The Environment
+### The Environment
+
 Follow the instructions below to explore the environment on your own machine! You will also learn how to use the Python API to control your agent.
 
 ### Installation requirements
