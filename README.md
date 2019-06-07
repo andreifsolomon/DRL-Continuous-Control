@@ -95,6 +95,14 @@ Then, place the environment archive file in the (current) continuous-control 'pr
 
 (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux_NoVis.zip) (version 1) or [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Linux_NoVis.zip) (version 2) to obtain the "headless" version of the environment.  You will **not** be able to watch the agent without enabling a virtual screen, but you will be able to train the agent.  (_To watch the agent, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
 
+### Repository Contents
+
+- **ContinuousControl.ipynb** - this is a notebook that contains the training code
+- **ContinuousControl-Viewer.ipynb** - notebook that can be used to view the final model, saved as 'best_actor_model.pth'
+- **dqn_agent.py** - this contains the implementation of the agent and the replay buffer
+- **model.py** - contains the Actor and Critic Networks implementations.
+
+- **best_actor_model.pth** - final saved weights after training
 
 ### Instructions
 
