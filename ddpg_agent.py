@@ -10,37 +10,36 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 BUFFER_SIZE = int(1e6)  # replay buffer size
-BATCH_SIZE = 256  # minibatch size
-GAMMA = 0.99  # discount factor
-TAU = 1e-3  # for soft update of target parameters
-LR_ACTOR = 2e-4  # learning rate of the actor
-LR_CRITIC = 2e-3  # learning rate of the critic
-WEIGHT_DECAY = 0  # L2 weight decay
+BATCH_SIZE =  256     # minibatch size
+GAMMA = 0.99            # discount factor
+TAU = 1e-3              # for soft update of target parameters
+LR_ACTOR = 2e-4        # learning rate of the actor
+LR_CRITIC = 2e-3        # learning rate of the critic
+WEIGHT_DECAY = 0        # L2 weight decay
 # Update params
 UPDATE_EVERY = 4
 ALT_UPDATE_EVERY = 10
 HARD_UPDATE_EVERY = 1000
 NUM_UPDATES = 4
 # Priority Buffer
-ALPHA = 0.1  # prioritization level (ALPHA=0 is uniform sampling so no prioritization)
+ALPHA = 0.1 # prioritization level (ALPHA=0 is uniform sampling so no prioritization)
 # EPSILON
 EPS_START = 1.0
-EPS_END = 0.01
+EPS_END= 0.01
 EPS_DECAY = 2e-7
 # Ornstein-Uhlenbeck noise
-ADD_OU_NOISE = True  # Add Ornstein-Uhlenbeck noise
-MU = 0.  # Ornstein-Uhlenbeck noise parameter mean parameter
-THETA = 0.15  # Ornstein-Uhlenbeck noise parameter
-SIGMA = 0.2  # Ornstein-Uhlenbeck noise standard deviation parameter
+ADD_OU_NOISE = True     # Add Ornstein-Uhlenbeck noise
+MU = 0.                 # Ornstein-Uhlenbeck noise parameter mean parameter
+THETA = 0.15            # Ornstein-Uhlenbeck noise parameter
+SIGMA = 0.2             # Ornstein-Uhlenbeck noise standard deviation parameter
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 
 class Agent():
     """Interacts with and learns from the environment."""
-
+    
     def __init__(self, state_size, action_size, random_seed, number_agents):
         """Initialize an Agent object.
-
+        
         Params
         ======
             state_size (int): dimension of each state
@@ -51,7 +50,7 @@ class Agent():
         self.action_size = action_size
         self.seed = random.seed(random_seed)
         self.number_agents = number_agents
-        self.eps = EPS_START
+        self.eps =EPS_START
 
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
@@ -72,8 +71,9 @@ class Agent():
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
 
+        self.actor_loss_means = []
         self.t_step = 0
-        self.state = "learning"
+        self.state  = "learning"
 
     def step(self, states, actions, rewards, next_states, dones, beta=1.):
         """Save experience in replay memory, and use random sample from buffer to learn."""
@@ -84,6 +84,8 @@ class Agent():
                 self.state = "learning"
             else:
                 self.state = "updating"
+
+
 
         if self.state == "updating":
             # for agent in range(self.number_agents):
@@ -172,6 +174,7 @@ class Agent():
         self.eps -= EPS_DECAY
         self.noise.reset()
 
+
     def _copy_weights(self, source_network, target_network):
         """Copy source network weights to targe (initialization)"""
         for target_param, source_param in zip(target_network.parameters(), source_network.parameters()):
@@ -185,11 +188,10 @@ class Agent():
         ======
             local_model: PyTorch model (weights will be copied from)
             target_model: PyTorch model (weights will be copied to)
-            tau (float): interpolation parameter
+            tau (float): interpolation parameter 
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
-            target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
-
+            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
 
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
@@ -219,7 +221,6 @@ class OUNoise:
         self.state = x + dx
         return self.state
 
-
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
 
@@ -235,12 +236,12 @@ class ReplayBuffer:
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.seed = random.seed(seed)
-
+    
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
-
+    
     def sample(self):
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
@@ -248,17 +249,14 @@ class ReplayBuffer:
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
         actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).float().to(device)
         rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
-        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(
-            device)
-        dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(
-            device)
+        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
+        dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
 
         return (states, actions, rewards, next_states, dones)
 
     def __len__(self):
         """Return the current size of internal memory."""
         return len(self.memory)
-
 
 class PrioritizedReplayBuffer:
     """Naive Prioritized Experience Replay buffer to store experience tuples."""
@@ -327,15 +325,13 @@ class PrioritizedReplayBuffer:
         return len(self.memory)
 
 
-# from: https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py
-# credits to: Jaromir Janisch
+#from: https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py
+#credits to: Jaromir Janisch
 """
 The Memory that is used for Prioritized Experience Replay
 """
 
 from sum_tree import SumTree
-
-
 class Replay_Memory:
     def __init__(self):
         global MEMORY_LEN
@@ -354,13 +350,13 @@ class Replay_Memory:
         """
         global BATCH_SIZE
         batch = []
-        # we want one representative of all distribution-segments in the batch
-        # e.g BATCH_SIZE=2: batch contains one sample from [min,median]
-        # and from [median,max]
+        #we want one representative of all distribution-segments in the batch
+        #e.g BATCH_SIZE=2: batch contains one sample from [min,median]
+        #and from [median,max]
         segment = self.tree.total() / BATCH_SIZE
         for i in range(BATCH_SIZE):
             minimum = segment * i
-            maximum = segment * (i + 1)
+            maximum = segment * (i+1)
             s = random.uniform(minimum, maximum)
             (idx, p, data) = self.tree.get(s)
             batch.append((idx, data))
@@ -374,3 +370,4 @@ class Replay_Memory:
          error: the newly calculated error
         """
         priority = (error + MEMORY_BIAS) ** MEMORY_POW
+        self.tree.update(idx, priority)
